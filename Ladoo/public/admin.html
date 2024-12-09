@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff7df;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: fit-content;
+        }
+
+        #uploadForm {
+            background-color: #fff2a8;
+            padding: 20px;
+            border-radius: 10px;
+            width: 500px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #ffeb77;
+        }
+
+        input[type="text"]::placeholder {
+            color: #7a7a7a;
+        }
+
+        .language-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .language-buttons button {
+            flex: 1;
+            padding: 10px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .language-buttons button {
+            background-color: #f1c40f;
+        }
+
+        .language-buttons button.active {
+            background-color: #e74c3c;
+        }
+
+        .upload-section {
+            text-align: center;
+        }
+
+        .upload-section img {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            border-radius: 10px;
+            border: 2px dashed #ccc;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #2ecc71;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #27ae60;
+        }
+
+
+        .search-bar {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 30px;
+            color: black;
+        }
+
+        .search-bar input {
+            width: 90%;
+            max-width: 400px;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: black;
+        }
+
+        .search-bar input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+        }
+
+        .search-results-container {
+            position: fixed;
+            top: 70px;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            max-height: 300px;
+            overflow-y: auto;
+            width: min(460px, 100%);
+            color: black;
+        }
+
+        .search-results-container.hidden {
+            display: none;
+        }
+
+        .visual-options {
+            background-color: #ffeb77;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .size-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .size-buttons button {
+            flex: 1;
+            padding: 10px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #f1c40f;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .size-buttons button.active {
+            background-color: #e74c3c;
+        }
+
+        .color-picker {
+            width: 100%;
+            height: 40px;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .font-select {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        .cover-btn {
+            transition: background-color 0.3s ease;
+        }
+
+        .cover-btn:hover {
+            opacity: 0.9;
+        }
+
+        .cover-btn.active {
+            background-color: #e74c3c !important;
+        }
+
+        #customCoverInput input[type="file"] {
+            background-color: white;
+            padding: 15px;
+        }
+
+        #customCoverPreview {
+            width: 400px;
+            height: 650px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Container for search results -->
+    <div id="searchResultsContainer" class="search-results-container hidden">
+        <!-- Songs matching the search query will be displayed here -->
+    </div>
+
+    <form id="uploadForm" action="/admin/upload" method="POST" enctype="multipart/form-data">
+
+        <h1>Upload Song Details</h1>
+        <h1>
+            <nav class="navbar">
+                <div class="brand">
+                    <span class="logo-icon">●</span>
+                    <span class="brand-name">Laddoo Studio</span>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search for songs...">
+                </div>
+                <div class="menu-icon">
+                    <div class="line"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                </div>
+            </nav>
+        </h1>
+
+        <!-- Language Section -->
+        <label for="language">Language</label>
+        <div class="language-buttons">
+            <button type="button" id="desiBtn" class="language-btn">Desi</button>
+            <button type="button" id="videshiBtn" class="language-btn">Videshi</button>
+        </div>
+        <input type="hidden" id="language" name="language" value="Desi">
+
+        <!-- Flavour -->
+        <label for="flavour">Flavour</label>
+        <input type="text" id="flavour" name="flavour" placeholder="e.g., Bollywood" required>
+
+        <!-- Add this after the flavour input and before the title input -->
+        <div class="visual-options">
+            <!-- Ice Cream Size -->
+            <label>Ice Cream Size</label>
+            <div class="size-buttons">
+                <button type="button" class="size-btn" data-size="S">Small</button>
+                <button type="button" class="size-btn" data-size="M">Medium</button>
+                <button type="button" class="size-btn" data-size="L">Large</button>
+            </div>
+
+            <!-- Ice Cream Color -->
+            <label>Ice Cream Color</label>
+            <input type="color" id="icecreamColor" class="color-picker" value="#FF69B4">
+
+            <!-- Background Color -->
+            <label>Background Color</label>
+            <input type="color" id="bgColor" class="color-picker" value="#2ecc71">
+
+        </div>
+        <!-- Add this after the language buttons and before the flavour input -->
+        <label for="language_song">Language of Song</label>
+        <input type="text" id="language_song" name="language_song" placeholder="e.g., Hindi, English" required>
+
+
+        <!-- Title -->
+        <label for="title">Title of the Song</label>
+        <input type="text" id="title" name="title" placeholder="Enter title" required>
+
+        <!-- Lyrics -->
+        <label for="lyrics">Lyrics of the Song*</label>
+        <div class="language-buttons">
+            <button type="button" id="withTimestampBtn" class="lyrics-btn">With Timestamp</button>
+            <button type="button" id="withoutTimestampBtn" class="lyrics-btn">W/o Timestamp</button>
+        </div>
+        <input type="file" id="lyrics" name="lyrics" accept=".lrc">
+
+        <!-- Add this after the lyrics file input -->
+        <div id="lyricsTextareaContainer" style="display: none;">
+            <label for="lyricsText">Enter Lyrics</label>
+            <textarea id="lyricsText" name="lyricsText" rows="10"
+                style="width: 95%; padding: 10px; margin-bottom: 15px; border: none; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); background-color: #ffeb77;"
+                placeholder="Enter lyrics here..."></textarea>
+        </div>
+
+        <!-- Audio -->
+        <label for="audio">MP3 File or WAV File*</label>
+        <input type="file" id="audio" name="audio" accept=".mp3,.wav" required>
+
+        <!--video -->
+        <label for="video">Video File</label>
+        <input type="file" id="video" name="video" accept=".mp4">
+
+        <!-- Album Name -->
+        <label for="album_name">Album Name</label>
+        <input type="text" id="album_name" name="album_name" placeholder="Enter album name">
+
+        <!-- Cover and Video -->
+        <div class="upload-section">
+            <label>Cover Preview</label>
+            <canvas id="coverPreview" width="500" height="675"
+                style="border-radius: 15px; width: 400px; height: 650px;"></canvas>
+            <div class="cover-options" style="margin-top: 20px;">
+                <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
+                    <button type="button" id="useGeneratedCover" class="cover-btn active"
+                        style="background-color: #f1c40f; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Use
+                        Generated Cover</button>
+                    <button type="button" id="useCustomCover" class="cover-btn"
+                        style="background-color: #f1c40f; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Upload
+                        Custom Cover</button>
+                </div>
+                <div id="customCoverInput" style="display: none;">
+                    <input type="file" id="coverFile" name="coverFile" accept="image/*"
+                        style="width: 95%; margin-bottom: 15px;">
+                    <img id="customCoverPreview"
+                        style="display: none; max-width: 100%; border-radius: 15px; margin-top: 10px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        // Load the SVG image
+        const icecreamImage = new Image();
+        icecreamImage.src = 'temp.svg';
+        let svgLoaded = false;
+
+        icecreamImage.onload = () => {
+            svgLoaded = true;
+            drawCover(); // Initial draw once SVG is loaded
+        };
+
+        icecreamImage.onerror = (err) => {
+            console.error('Error loading SVG:', err);
+        };
+    </script>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData();
+
+            try {
+                // Add basic form fields
+                formData.append('language', document.getElementById('language').value);
+                formData.append('flavour', document.getElementById('flavour').value);
+                formData.append('language_song', document.getElementById('language_song').value);
+                formData.append('title', document.getElementById('title').value);
+                formData.append('album_name', document.getElementById('album_name').value);
+
+                // Handle lyrics based on selection
+                if (withoutTimestampBtn.classList.contains('active')) {
+                    const lyricsText = document.getElementById('lyricsText').value;
+                    if (lyricsText) {
+                        const textFile = new Blob([lyricsText], { type: 'text/plain' });
+                        formData.append('lyrics', textFile, 'lyrics.txt');
+                    }
+                } else {
+                    const lyricsFile = document.getElementById('lyrics').files[0];
+                    if (lyricsFile) {
+                        formData.append('lyrics', lyricsFile);
+                    }
+                }
+
+                // Add audio file
+                const audioFile = document.getElementById('audio').files[0];
+                if (audioFile) {
+                    formData.append('audio', audioFile);
+                }
+
+                // Add video file if present
+                const videoFile = document.getElementById('video').files[0];
+                if (videoFile) {
+                    formData.append('video', videoFile);
+                }
+
+                // Handle cover image based on selection
+                if (useGeneratedCover.classList.contains('active')) {
+                    // Convert canvas to blob and add to form data
+                    const canvas = document.getElementById('coverPreview');
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+                    formData.append('cover', blob, 'generated-cover.jpg');
+                } else {
+                    // Use the uploaded custom cover
+                    const coverFile = document.getElementById('coverFile').files[0];
+                    if (!coverFile) {
+                        alert('Please select a custom cover image');
+                        return;
+                    }
+                    formData.append('cover', coverFile);
+                }
+
+                // Add visual preferences
+                const visualPreferences = {
+                    size: document.querySelector('.size-btn.active').dataset.size,
+                    icecreamColor: document.getElementById('icecreamColor').value,
+                    bgColor: document.getElementById('bgColor').value
+                };
+                formData.append('visualPreferences', JSON.stringify(visualPreferences));
+
+                // Submit the form
+                const response = await fetch('/admin/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText);
+                }
+
+                const result = await response.json();
+                alert('Upload successful!');
+                
+                // Reset form and UI
+                event.target.reset();
+                drawCover();
+                document.getElementById('customCoverPreview').style.display = 'none';
+                document.getElementById('customCoverInput').style.display = 'none';
+                useGeneratedCover.classList.add('active');
+                useCustomCover.classList.remove('active');
+                useGeneratedCover.style.backgroundColor = '#e74c3c';
+                useCustomCover.style.backgroundColor = '#f1c40f';
+                coverPreview.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert(error.message || 'An error occurred during upload');
+            }
+        });
+    </script>
+    <script>
+        // JavaScript for toggling active button
+        const desiBtn = document.getElementById('desiBtn');
+        const videshiBtn = document.getElementById('videshiBtn');
+        const languageInput = document.getElementById('language');
+
+        // Add click event listener for both buttons
+        desiBtn.addEventListener('click', () => {
+            setActiveButton(desiBtn, 'Desi');
+        });
+
+        videshiBtn.addEventListener('click', () => {
+            setActiveButton(videshiBtn, 'Videshi');
+        });
+
+        function setActiveButton(activeButton, language) {
+            // Remove the active class from both buttons
+            desiBtn.classList.remove('active');
+            videshiBtn.classList.remove('active');
+
+            // Add the active class to the clicked button
+            activeButton.classList.add('active');
+
+            // Update the hidden input value
+            languageInput.value = language;
+        }
+    </script>
+    <script>
+        const withTimestampBtn = document.getElementById('withTimestampBtn');
+        const withoutTimestampBtn = document.getElementById('withoutTimestampBtn');
+        const lyricsInput = document.getElementById('lyrics');
+
+        // Set default state
+        withTimestampBtn.classList.add('active');
+
+        // Add click event listeners
+        withTimestampBtn.addEventListener('click', () => {
+            setActiveLyricsButton(withTimestampBtn, '.lrc');
+        });
+
+        withoutTimestampBtn.addEventListener('click', () => {
+            setActiveLyricsButton(withoutTimestampBtn, '.txt');
+        });
+
+        function setActiveLyricsButton(activeButton, acceptType) {
+            // Remove the active class from both buttons
+            withTimestampBtn.classList.remove('active');
+            withoutTimestampBtn.classList.remove('active');
+
+            // Add the active class to the clicked button
+            activeButton.classList.add('active');
+
+            const lyricsTextareaContainer = document.getElementById('lyricsTextareaContainer');
+
+            if (activeButton === withoutTimestampBtn) {
+                // Show textarea, hide file input
+                lyricsInput.style.display = 'none';
+                lyricsTextareaContainer.style.display = 'block';
+                lyricsInput.removeAttribute('required');
+            } else {
+                // Show file input, hide textarea
+                lyricsInput.style.display = 'block';
+                lyricsTextareaContainer.style.display = 'none';
+                lyricsInput.setAttribute('required', '');
+            }
+
+            // Update the accepted file type for the lyrics input
+            lyricsInput.setAttribute('accept', acceptType);
+        }
+    </script>
+    <script>
+        let songs = [];
+        fetch('/songs')
+            .then(response => response.json())
+            .then(data => {
+                songs = data;
+            })
+            .catch(err => console.error("Error loading songs:", err));
+
+        const searchInput = document.getElementById("searchInput");
+        const searchResultsContainer = document.getElementById("searchResultsContainer");
+
+        searchInput.addEventListener("input", function (event) {
+            const query = event.target.value.toLowerCase();
+
+            // Clear previous search results
+            searchResultsContainer.innerHTML = "";
+
+            if (query === "") {
+                searchResultsContainer.classList.add("hidden");
+                return;
+            }
+
+            // Filter songs based on the search query
+            const filteredSongs = songs.filter(song => song.songName.toLowerCase().includes(query));
+
+            // Display search results
+            if (filteredSongs.length > 0) {
+                searchResultsContainer.classList.remove("hidden");
+                filteredSongs.forEach((song, index) => {
+                    const songElement = document.createElement("div");
+                    songElement.classList.add("search-result-item");
+                    songElement.textContent = song.songName;
+                    songElement.dataset.index = index;
+
+                    // Click listener to play the selected song
+                    songElement.addEventListener("click", () => {
+                        songIndex = index;
+                        playSong();
+                        searchResultsContainer.classList.add("hidden");
+                    });
+
+                    searchResultsContainer.appendChild(songElement);
+                });
+            } else {
+                searchResultsContainer.innerHTML = "<p>No songs found.</p>";
+            }
+        });
+    </script>
+    <script>
+        // Size button functionality
+        const sizeButtons = document.querySelectorAll('.size-btn');
+        sizeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                sizeButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+
+        // Set default size to Medium
+        document.querySelector('[data-size="M"]').classList.add('active');
+
+        // Store visual preferences in localStorage
+        function saveVisualPreferences() {
+            const preferences = {
+                size: document.querySelector('.size-btn.active').dataset.size,
+                icecreamColor: document.getElementById('icecreamColor').value,
+                bgColor: document.getElementById('bgColor').value
+            };
+            localStorage.setItem('visualPreferences', JSON.stringify(preferences));
+        }
+
+        // Add event listeners for all visual options
+        document.querySelectorAll('.size-btn').forEach(btn =>
+            btn.addEventListener('click', saveVisualPreferences));
+        document.getElementById('icecreamColor').addEventListener('change', saveVisualPreferences);
+        document.getElementById('bgColor').addEventListener('change', saveVisualPreferences);
+
+        // Load saved preferences on page load
+        function loadVisualPreferences() {
+            const saved = localStorage.getItem('visualPreferences');
+            if (saved) {
+                const preferences = JSON.parse(saved);
+
+                // Set size
+                document.querySelectorAll('.size-btn').forEach(btn => {
+                    if (btn.dataset.size === preferences.size) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+
+                // Set colors and font
+                document.getElementById('icecreamColor').value = preferences.icecreamColor;
+                document.getElementById('bgColor').value = preferences.bgColor;
+                document.getElementById('fontStyle').value = preferences.font;
+            }
+        }
+
+        // Load preferences when page loads
+        loadVisualPreferences();
+    </script>
+    <script>
+        function drawCover() {
+            const canvas = document.getElementById('coverPreview');
+            const ctx = canvas.getContext('2d');
+
+            // Get current values
+            const bgColor = document.getElementById('bgColor').value;
+            const icecreamColor = document.getElementById('icecreamColor').value;
+            const size = document.querySelector('.size-btn.active').dataset.size;
+            const language = document.getElementById('language').value;
+            const flavour = document.getElementById('flavour').value;
+            const title = document.getElementById('title').value;
+            const languageSong = document.getElementById('language_song').value;
+            const album_name = document.getElementById('album_name').value;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw background
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw language name at top
+            ctx.fillStyle = 'black';
+            ctx.font = '28px "Courier Prime"';
+            ctx.textAlign = 'center';
+            let album_name_text = album_name + '';
+            ctx.fillText(album_name_text, canvas.width / 2, 80);
+
+            // Draw "Flavour" text
+            ctx.font = 'bold 35px "Courier Prime"';
+            ctx.fillText('Flavour', canvas.width / 2, 160);
+
+            // Draw flavour name
+            let flavourText = flavour + '';
+            ctx.font = '30px "Courier Prime"';
+            // Truncate flavour name if longer than 22 characters
+            if (flavourText.length > 18) {
+                flavourText = flavourText.substring(0, 15) + '...';
+            }
+            ctx.fillText(flavourText, canvas.width / 2, 220);
+
+            // Draw the SVG ice cream if loaded
+            if (svgLoaded) {
+                const scale = size === 'S' ? 0.6 : size === 'M' ? 0.7 : 0.8;
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+
+                // Calculate ice cream dimensions
+                const imgWidth = 200 * scale;
+                const imgHeight = 200 * scale;
+
+                // Save context state
+                ctx.save();
+
+                // Create temporary canvas for coloring
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = imgWidth;
+                tempCanvas.height = imgHeight;
+
+                // Draw original SVG on temporary canvas
+                tempCtx.drawImage(
+                    icecreamImage,
+                    0,
+                    0,
+                    imgWidth,
+                    imgHeight
+                );
+
+                // Get image data
+                const imageData = tempCtx.getImageData(0, 0, imgWidth, imgHeight);
+                const data = imageData.data;
+
+                // Convert hex color to RGB
+                const color = icecreamColor.match(/[A-Za-z0-9]{2}/g).map(v => parseInt(v, 16));
+
+                // Replace black pixels with selected color
+                for (let i = 0; i < data.length; i += 4) {
+                    if (data[i] === 0 && data[i + 1] === 0 && data[i + 2] === 0) {
+                        data[i] = color[0];     // R
+                        data[i + 1] = color[1]; // G
+                        data[i + 2] = color[2]; // B
+                    }
+                }
+
+                // Put colored image data back
+                tempCtx.putImageData(imageData, 0, 0);
+
+                // Draw the SVG
+                ctx.drawImage(
+                    tempCanvas,
+                    centerX - imgWidth / 2,
+                    centerY - imgHeight / 2,
+                    imgWidth,
+                    imgHeight
+                );
+
+                // Restore context state
+                ctx.restore();
+            }
+
+            // Draw size text below ice cream
+
+            ctx.fillStyle = 'black';
+            ctx.font = '24px "Courier Prime"';
+            ctx.fillText('Size: ' + (size === 'S' ? 'Small' : size === 'M' ? 'Medium' : 'Large'),
+                canvas.width / 2, canvas.height / 2 + 120);
+
+            // Draw song name at bottom
+            ctx.fillStyle = '#222121';
+            const songNameY = canvas.height - 100;
+            const songNameHeight = 40;
+
+            // Draw language of song above song name box
+            ctx.fillStyle = 'black';
+            ctx.font = '22px "Courier Prime"';
+            ctx.fillText(languageSong || 'Language', canvas.width / 2, songNameY - 60);
+
+            // Measure text width for dynamic box sizing
+            ctx.font = '22px "Courier Prime"';
+            let songText = title || 'Song';
+            // Truncate song name if longer than 25 characters
+            if (songText.length > 20) {
+                songText = songText.substring(0, 17) + '...';
+            }
+            const textWidth = ctx.measureText(songText).width;
+            const padding = 20; // 10px padding on each side
+
+            // Draw rounded rectangle for song name
+            const rectWidth = ctx.measureText(language).width + (padding * 4);
+            const rectHeight = songNameHeight + 10;
+            const rectX = canvas.width / 2 - rectWidth / 2;
+            const rectY = songNameY - rectHeight / 2;
+            const radius = 29;
+
+            ctx.beginPath();
+            ctx.moveTo(rectX + radius, rectY);
+            ctx.lineTo(rectX + rectWidth - radius, rectY);
+            ctx.quadraticCurveTo(rectX + rectWidth, rectY, rectX + rectWidth, rectY + radius);
+            ctx.lineTo(rectX + rectWidth, rectY + rectHeight - radius);
+            ctx.quadraticCurveTo(rectX + rectWidth, rectY + rectHeight, rectX + rectWidth - radius, rectY + rectHeight);
+            ctx.lineTo(rectX + radius, rectY + rectHeight);
+            ctx.quadraticCurveTo(rectX, rectY + rectHeight, rectX, rectY + rectHeight - radius);
+            ctx.lineTo(rectX, rectY + radius);
+            ctx.quadraticCurveTo(rectX, rectY, rectX + radius, rectY);
+            ctx.closePath();
+            ctx.fill();
+
+            // Draw song name text
+            ctx.fillStyle = 'white';
+            ctx.font = '22px "Courier Prime"';
+            ctx.fillText(language, canvas.width / 2, songNameY + 6);
+        }
+
+        // Add Courier Prime font loading
+        const fontLink = document.createElement('link');
+        fontLink.href = 'https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap';
+        fontLink.rel = 'stylesheet';
+        document.head.appendChild(fontLink);
+
+        // Wait for font to load before initial draw
+        document.fonts.ready.then(() => {
+            drawCover();
+        });
+
+        // Add event listeners to update cover preview
+        document.querySelectorAll('.size-btn').forEach(btn =>
+            btn.addEventListener('click', drawCover));
+        document.getElementById('icecreamColor').addEventListener('input', drawCover);
+        document.getElementById('bgColor').addEventListener('input', drawCover);
+        document.getElementById('language').addEventListener('change', drawCover);
+        document.getElementById('flavour').addEventListener('input', drawCover);
+        document.getElementById('title').addEventListener('input', drawCover);
+        document.getElementById('language_song').addEventListener('input', drawCover);
+        document.getElementById('album_name').addEventListener('input', drawCover);
+        document.querySelectorAll('.language-btn').forEach(btn =>
+            btn.addEventListener('click', drawCover));
+    </script>
+    <script>
+        // Cover photo selection functionality
+        const useGeneratedCover = document.getElementById('useGeneratedCover');
+        const useCustomCover = document.getElementById('useCustomCover');
+        const customCoverInput = document.getElementById('customCoverInput');
+        const coverPreview = document.getElementById('coverPreview');
+        const coverFile = document.getElementById('coverFile');
+        const customCoverPreview = document.getElementById('customCoverPreview');
+
+        useGeneratedCover.addEventListener('click', () => {
+            useGeneratedCover.classList.add('active');
+            useCustomCover.classList.remove('active');
+            customCoverInput.style.display = 'none';
+            coverPreview.style.display = 'block';
+            customCoverPreview.style.display = 'none';
+
+            // Update styles
+            useGeneratedCover.style.backgroundColor = '#e74c3c';
+            useCustomCover.style.backgroundColor = '#f1c40f';
+        });
+
+        useCustomCover.addEventListener('click', () => {
+            useCustomCover.classList.add('active');
+            useGeneratedCover.classList.remove('active');
+            customCoverInput.style.display = 'block';
+            coverPreview.style.display = 'none';
+            if (customCoverPreview.src) {
+                customCoverPreview.style.display = 'block';
+            }
+
+            // Update styles
+            useCustomCover.style.backgroundColor = '#e74c3c';
+            useGeneratedCover.style.backgroundColor = '#f1c40f';
+        });
+
+        coverFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    customCoverPreview.src = e.target.result;
+                    customCoverPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+
+</body>
+
+</html>

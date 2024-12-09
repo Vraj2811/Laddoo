@@ -1,0 +1,10 @@
+Upload failed: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>MulterError: Unexpected field<br> &nbsp; &nbsp;at wrappedFileFilter (/home/vraj/Desktop/Ladoo/node_modules/multer/index.js:40:19)<br> &nbsp; &nbsp;at Multipart.&lt;anonymous&gt; (/home/vraj/Desktop/Ladoo/node_modules/multer/lib/make-middleware.js:107:7)<br> &nbsp; &nbsp;at Multipart.emit (node:events:507:28)<br> &nbsp; &nbsp;at HeaderParser.cb (/home/vraj/Desktop/Ladoo/node_modules/busboy/lib/types/multipart.js:358:14)<br> &nbsp; &nbsp;at HeaderParser.push (/home/vraj/Desktop/Ladoo/node_modules/busboy/lib/types/multipart.js:162:20)<br> &nbsp; &nbsp;at SBMH.ssCb [as _cb] (/home/vraj/Desktop/Ladoo/node_modules/busboy/lib/types/multipart.js:394:37)<br> &nbsp; &nbsp;at feed (/home/vraj/Desktop/Ladoo/node_modules/streamsearch/lib/sbmh.js:248:10)<br> &nbsp; &nbsp;at SBMH.push (/home/vraj/Desktop/Ladoo/node_modules/streamsearch/lib/sbmh.js:104:16)<br> &nbsp; &nbsp;at Multipart._write (/home/vraj/Desktop/Ladoo/node_modules/busboy/lib/types/multipart.js:567:19)<br> &nbsp; &nbsp;at writeOrBuffer (node:internal/streams/writable:570:12)</pre>
+</body>
+</html>
