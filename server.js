@@ -4,7 +4,7 @@ const path = require('path');
 const multer = require('multer');
 
 const app = express();
-const PORT = 3000;
+const PORT = 8000;
 
 // Serve static files
 app.use(express.static('public'));
@@ -71,13 +71,49 @@ app.get('/songs', (req, res) => {
 
                     // Check if the current item is a directory
                     if (fs.statSync(flavourPath).isDirectory()) {
-                        fs.readdirSync(flavourPath).forEach(file => {
+                        const files = fs.readdirSync(flavourPath);
+
+                        files.forEach(file => {
                             if (file.endsWith('.mp3')) {
                                 const title = file.replace('.mp3', '');
+
+                                // Find cover image with supported extensions
+                                const imageExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
+                                let coverPath = '';
+                                for (const ext of imageExtensions) {
+                                    if (files.includes(`${title}${ext}`)) {
+                                        coverPath = `${language}/${flavour}/${title}${ext}`;
+                                        break;
+                                    }
+                                }
+                                // Fallback if no cover found (client handles empty/default)
+
+                                // Find lyrics file
+                                const lyricsExtensions = ['.lrc', '.txt'];
+                                let lyricsPath = '';
+                                for (const ext of lyricsExtensions) {
+                                    if (files.includes(`${title}${ext}`)) {
+                                        lyricsPath = `${language}/${flavour}/${title}${ext}`;
+                                        break;
+                                    }
+                                }
+
+                                // Find video file
+                                const videoExtensions = ['.mp4', '.webm'];
+                                let videoPath = '';
+                                for (const ext of videoExtensions) {
+                                    if (files.includes(`${title}${ext}`)) {
+                                        videoPath = `${language}/${flavour}/${title}${ext}`;
+                                        break;
+                                    }
+                                }
+
                                 songs.push({
                                     songName: title,
                                     filePath: `${language}/${flavour}/${file}`,
-                                    coverPath: `${language}/${flavour}/${title}.jpg`,
+                                    coverPath: coverPath,
+                                    lyricsPath: lyricsPath,
+                                    videoPath: videoPath, // New field
                                     flavor: flavour,
                                     language: language,
                                 });

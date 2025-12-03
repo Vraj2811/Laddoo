@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         previous.removeEventListener('click', handlePreviousClick);
         previous.addEventListener('click', handlePreviousClick);
     }
-    
+
     if (next) {
         next.removeEventListener('click', handleNextClick);
         next.addEventListener('click', handleNextClick);
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show flavor cards and search
             const flavorCardsContainer = document.getElementById('flavorCardsContainer');
             flavorCardsContainer.classList.remove('hidden');
-            
+
             // Hide song cover
             const songCoverContainer = document.querySelector('.song-cover-container');
             if (songCoverContainer) {
@@ -99,7 +99,7 @@ function handlePreviousClick() {
         const testIndex = (songIndex - i + songs.length) % songs.length;
         const testSong = songs[testIndex];
 
-        if (testSong.flavor === currentFlavor && 
+        if (testSong.flavor === currentFlavor &&
             testSong.language === currentLanguage) {
             prevIndex = testIndex;
             foundPrev = true;
@@ -136,7 +136,7 @@ function handleNextClick() {
         const testIndex = (songIndex + i) % songs.length;
         const testSong = songs[testIndex];
 
-        if (testSong.flavor === currentFlavor && 
+        if (testSong.flavor === currentFlavor &&
             testSong.language === currentLanguage) {
             nextIndex = testIndex;
             foundNext = true;
@@ -160,10 +160,10 @@ function handleVideoClick(e) {
     if (!currentSong) return;
 
     isVideoPlaying = !isVideoPlaying;
-    const videoPath = currentSong.coverPath.replace('.jpg', '.mp4');
+    const videoPath = currentSong.videoPath;
     const videoIcon = document.getElementById("videoToggle");
 
-    if (isVideoPlaying) {
+    if (isVideoPlaying && videoPath) {
         fetch(videoPath, { method: 'HEAD' })
             .then(response => {
                 if (!response.ok) throw new Error("Video not found");
@@ -180,11 +180,14 @@ function handleVideoClick(e) {
                     </video>
                 `;
 
-                const video = document.getElementById("songVideo");
                 if (video) {
                     video.currentTime = audioElement.currentTime;
                     videoIcon.classList.remove("fa-video");
                     videoIcon.classList.add("fa-video-slash");
+
+                    // Ensure container is visible
+                    songCoverContainer.classList.remove('hidden');
+                    document.getElementById('flavorCardsContainer').classList.add('hidden');
                 }
             })
             .catch(error => {
@@ -255,9 +258,9 @@ function renderFlavorCards() {
                 <div class="flavor-language">${language}</div>
                 <div class="flavor-subtitle">Flavour</div>
                 <div class="flavor-name1">@${flavor.toLowerCase()}</div>
-                <img src="temp.svg" alt="Ice cream" class="flavor-icon">
+                <img src="temp.svg" alt="Ice cream" class="flavor-icon temp-svg">
                 <button class="play-button" data-language="${language}" data-flavor="${flavor}">
-                    <img src="arrow.svg" alt="Play">
+                    <i class="fas fa-play" style="color: black; font-size: 24px;"></i>
                 </button>
             `;
 
@@ -384,7 +387,7 @@ function addEventListeners() {
             if (songListContainer) {
                 songListContainer.classList.add('hidden');
             }
-            
+
             // Reset menu icon state
             const menuIcon = document.querySelector('.menu-icon');
             if (menuIcon) {
@@ -489,35 +492,26 @@ function addEventListeners() {
 
 
     // Heart icon click handler
+    // Heart icon click handler
     if (heartIcon) {
         heartIcon.addEventListener('click', (e) => {
             e.stopPropagation(); // Prevent event bubbling
-            console.log('Heart clicked'); // Debug log
-            
+
             if (heartIcon.classList.contains('fa-regular')) {
                 heartIcon.classList.remove('fa-regular');
                 heartIcon.classList.add('fa-solid');
-                heartIcon.style.color = "#ff0000";
                 showTempOverlay();
             } else {
                 heartIcon.classList.remove('fa-solid');
                 heartIcon.classList.add('fa-regular');
-                heartIcon.style.color = "";
             }
         });
-        
-        // Make sure the icon is clickable
-        heartIcon.style.cursor = 'pointer';
-        heartIcon.style.zIndex = '1000';
-        heartIcon.style.position = 'relative';
     }
 
     // Video icon click handler
     const videoIcon = document.getElementById("videoToggle");
     if (videoIcon) {
         videoIcon.addEventListener('click', handleVideoClick);
-        videoIcon.style.cursor = 'pointer';
-        videoIcon.style.zIndex = '1000';
     }
 }
 
@@ -539,7 +533,7 @@ function playSong() {
     songCoverContainer.classList.remove('hidden');
 
     const flavorSearchContainer = document.getElementById('flavorSearchContainer');
-    flavorSearchContainer.classList.add('hidden');  
+    flavorSearchContainer.classList.add('hidden');
 
     let songName = songs[songIndex].songName;
     if (songName.length > 18) {
@@ -578,7 +572,7 @@ function playSong() {
 songCoverContainer.addEventListener("touchstart", (e) => {
     touchStartY = e.touches[0].clientY;
     isSwiping = true;
-    
+
     // Get the cover image
     const coverImage = document.getElementById("songCoverImage");
     if (coverImage) {
@@ -588,10 +582,10 @@ songCoverContainer.addEventListener("touchstart", (e) => {
 
 songCoverContainer.addEventListener("touchmove", (e) => {
     if (!isSwiping) return;
-    
+
     touchEndY = e.touches[0].clientY;
     const deltaY = touchEndY - touchStartY;
-    
+
     // Get the cover image
     const coverImage = document.getElementById("songCoverImage");
     if (coverImage) {
@@ -606,19 +600,19 @@ songCoverContainer.addEventListener("touchmove", (e) => {
 songCoverContainer.addEventListener("touchend", () => {
     if (!isSwiping) return;
     isSwiping = false;
-    
+
     const deltaY = touchEndY - touchStartY;
     const coverImage = document.getElementById("songCoverImage");
-    
+
     if (coverImage) {
         coverImage.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
         coverImage.style.transform = 'translateY(0)';
         coverImage.style.opacity = '1';
     }
-    
+
     // Threshold for swipe
     const SWIPE_THRESHOLD = 100;
-    
+
     if (Math.abs(deltaY) > SWIPE_THRESHOLD) {
         if (deltaY > 0) {
             // Swipe down (previous song)
@@ -628,7 +622,7 @@ songCoverContainer.addEventListener("touchend", () => {
             nextSongSmooth();
         }
     }
-    
+
     // Reset values
     touchStartY = 0;
     touchEndY = 0;
@@ -750,10 +744,10 @@ function playSongSmooth(direction) {
 function updateSongNameWithAnimation(direction) {
     const songName = songs[songIndex].songName;
     const masterSongName = document.getElementById("masterSongName");
-    
+
     // First remove any existing animation
     masterSongName.style.opacity = '0';
-    
+
     setTimeout(() => {
         if (songName.length > 18) {
             masterSongName.innerHTML = `<div class="scrolling">${songName}</div>`;
@@ -770,9 +764,18 @@ let lyrics = [];
 
 // Pen icon click to show lyrics
 document.querySelector('.fa-pen-nib').addEventListener('click', () => {
-    lyricsContainer.classList.toggle('visible'); // Toggle the 'visible' class
-    if (lyricsContainer.classList.contains('visible')) {
+    if (lyricsContainer.classList.contains('hidden')) {
+        lyricsContainer.classList.remove('hidden');
+        // Small delay to allow display:block to apply before adding visible class for transition
+        setTimeout(() => {
+            lyricsContainer.classList.add('visible');
+        }, 10);
         loadLyrics();
+    } else {
+        lyricsContainer.classList.remove('visible');
+        setTimeout(() => {
+            lyricsContainer.classList.add('hidden');
+        }, 300); // Wait for transition
     }
 });
 
@@ -780,39 +783,32 @@ function loadLyrics() {
     const currentSong = songs[songIndex];
     if (!currentSong) return; // Ensure the current song exists
 
-    // Construct paths for both .lrc and .txt
-    const lrcPath = currentSong.filePath.replace('.mp3', '.lrc');
-    const txtPath = currentSong.filePath.replace('.mp3', '.txt');
-
-    // Attempt to load .lrc file first
-    fetch(lrcPath)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('LRC file not found'); // Proceed to .txt file
-            }
-            return response.text();
-        })
-        .then(data => {
-            lyrics = parseLyrics(data); // Parse .lrc format
-            displayLyrics();
-        })
-        .catch(() => {
-            // Fallback to .txt file
-            fetch(txtPath)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Lyrics file not found');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    displayPlainLyrics(data); // Display plain text lyrics
-                })
-                .catch(err => {
-                    lyricsContent.innerHTML = "<p>Lyrics not available for this song.</p>";
-                    console.error("Failed to load lyrics:", err);
-                });
-        });
+    // Use the lyrics path provided by the server
+    if (currentSong.lyricsPath) {
+        fetch(currentSong.lyricsPath)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Lyrics file not found');
+                }
+                return response.text();
+            })
+            .then(data => {
+                // Determine format based on extension
+                if (currentSong.lyricsPath.endsWith('.lrc')) {
+                    lyrics = parseLyrics(data);
+                    displayLyrics();
+                } else {
+                    displayPlainLyrics(data);
+                }
+            })
+            .catch(err => {
+                lyricsContent.innerHTML = "<p>Lyrics not available for this song.</p>";
+                console.error("Failed to load lyrics:", err);
+            });
+    } else {
+        // Fallback or no lyrics found
+        lyricsContent.innerHTML = "<p>Lyrics not available for this song.</p>";
+    }
 }
 
 function displayPlainLyrics(text) {
@@ -956,17 +952,17 @@ function showTempOverlay() {
     const overlay = document.createElement("div");
     overlay.className = "temp-overlay";
     overlay.innerHTML = `<img src="temp.png" alt="Temp" class="temp-overlay-image">`;
-    
+
     const songCoverContainer = document.querySelector(".song-cover-container");
     if (songCoverContainer) {
         songCoverContainer.appendChild(overlay);
-        
+
         // Force reflow
         overlay.offsetHeight;
-        
+
         // Add show class
         overlay.classList.add("show");
-        
+
         // Remove overlay after animation
         setTimeout(() => {
             overlay.classList.remove("show");
@@ -1007,14 +1003,14 @@ function initializeFlavorSearch() {
     searchBox.addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
         let firstMatchFound = false;
-        
+
         flavorCards.forEach(card => {
             const flavorName = card.querySelector('.flavor-name1').textContent.toLowerCase();
             const flavorLanguage = card.querySelector('.flavor-language').textContent.toLowerCase();
-            
+
             if (flavorName.includes(searchTerm) || flavorLanguage.includes(searchTerm)) {
                 card.classList.remove('filtered');
-                
+
                 // Scroll to first match
                 if (!firstMatchFound) {
                     firstMatchFound = true;
@@ -1142,7 +1138,7 @@ function renderSongs() {
 function toggleNavbarElements(showElements) {
     const searchBar = document.querySelector('.search-bar');
     const menuIcon = document.querySelector('.menu-icon');
-    
+
     if (showElements) {
         searchBar.classList.remove('hidden');
         menuIcon.classList.remove('hidden');
