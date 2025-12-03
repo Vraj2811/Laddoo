@@ -3,82 +3,64 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Laddoo Music</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="1.css">
     <script src="1.js" defer></script>
     <script src="https://kit.fontawesome.com/a0da1b2b71.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <nav class="navbar">
-        <div class="brand">
-            <img src="logo.png" alt="Laddoo Studio" class="brand-logo">
+    <!-- Top Bar (Shared) -->
+    <nav class="top-bar">
+        <div class="logo" id="homeBtn">
+            <img src="logo.png" alt="Laddoo">
         </div>
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search for plays...">
-        </div>
-        <div class="menu-icon">
-            <div class="line"></div>
-            <div class="line"></div>
-            <div class="line"></div>
+        <div class="header-actions">
+            <i class="fas fa-search" id="headerSearchIcon" style="font-size: 20px; cursor: pointer;"></i>
         </div>
     </nav>
 
-    <div id="searchResultsContainer" class="search-results-container hidden"></div>
-
-    <!-- Update the song cover container -->
-    <div id="songCoverContainer" class="song-cover-container hidden">
-        <img id="songCoverImage" class="song-cover" src="images.png" alt="Song Cover">
-    </div>
-
-
-    <div class="bottom">
-        <div class="song-info">
-            <div id="masterSongName" class="SongName">Select a Song</div>
-            <i class="fa-solid fa-arrow-left vraj" id="rotateLeft" style="font-size: 28px;"></i>
-            <i class="fa-regular fa-heart vraj" id="heartIcon" style="font-size: 28px;"></i>
+    <!-- Home View -->
+    <div id="homeView" class="view-container">
+        <div class="mode-selector">
+            <button id="desiBtn" class="mode-btn active">Desi</button>
+            <button id="videshiBtn" class="mode-btn">Videshi</button>
         </div>
 
-        <input type="range" id="ProgressBar" min="0" max="100" value="0">
-        <div class="container1">
-            <div class="icons">
-                <i class="fa-solid fa-video vraj" id="videoToggle" style="font-size: 28px;"></i>
-                <i class="fas fa-2x fa-step-backward" id="previous"></i>
-                <i class="far fa-2x fa-play-circle" id="masterPlay"></i>
-                <i class="fas fa-2x fa-step-forward" id="next"></i>
-                <i class="fa-solid fa-pen-nib vraj" id="toggleIcon" style="font-size: 28px;"></i>
-            </div>
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" id="albumSearch" placeholder="Search albums...">
+        </div>
+
+        <div class="albums-grid" id="albumsGrid">
+            <!-- Albums injected here -->
         </div>
     </div>
 
-    <div id="lyricsContainer" class="lyrics-container hidden">
-        <div id="lyricsContent" class="lyrics-content">
-            <!-- Lyrics lines will be dynamically added here -->
+    <!-- Reels View -->
+    <div id="reelsView" class="view-container hidden">
+        <main class="reels-container" id="feedList">
+            <!-- Reels injected here -->
+        </main>
+    </div>
+
+    <!-- Lyrics Overlay -->
+    <div class="lyrics-overlay" id="lyricsOverlay">
+        <div class="lyrics-header">
+            <h3>Lyrics</h3>
+            <i class="fas fa-times" id="closeLyrics"></i>
+        </div>
+        <div class="lyrics-content" id="lyricsContent">
+            <!-- Lyrics injected here -->
         </div>
     </div>
-
-
-    <div class="flavor-cards-container" id="flavorCardsContainer">
-        <!-- Cards will be added here dynamically -->
-    </div>
-
-    <div class="song-list-container">
-        <div class="song-list hidden" id="songs-container"></div>
-    </div>
-
-    <div class="flavor-search-container" id="flavorSearchContainer">
-        <input type="text" class="flavor-search-box" placeholder="Find your Flavour..." id="flavorSearchBox" style="text-align: center;">
-    </div>
-
-    <script src="https://kit.fontawesome.com/a0da1b2b71.js" crossorigin="anonymous"></script>
 </body>
 
 </html>
